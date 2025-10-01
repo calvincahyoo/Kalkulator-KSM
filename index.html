@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kalkulator KSM</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: rgb(240, 240, 240);
+      color: rgb(0, 61, 121);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 10px;
+      position: relative;
+      overflow-x: hidden;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .top-left-logo, .top-right-logo {
+      position: absolute;
+      top: 20px;
+      z-index: 2;
+      animation: slideDown 1s ease-in-out;
+    }
+    .top-left-logo { left: 20px; }
+    .top-right-logo { right: 20px; }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .top-left-logo img { max-width: 120px; height: auto; transition: transform 0.3s ease; }
+    .top-right-logo img { max-width: 180px; height: auto; transition: transform 0.3s ease; }
+    .top-left-logo img:hover, .top-right-logo img:hover { transform: scale(1.05); }
+
+    .calculator {
+      background-color: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    h2 {
+      color: rgb(0, 61, 121);
+      margin-bottom: 20px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      text-align: left;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid rgb(0, 61, 121);
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 20px;
+      background-color: rgb(255, 183, 0);
+      border: none;
+      border-radius: 8px;
+      color: rgb(0, 61, 121);
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background-color: rgb(255, 170, 0);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    }
+
+    /* Modal hasil */
+    .modal {
+      display: flex;
+      visibility: hidden;
+      opacity: 0;
+      position: fixed;
+      z-index: 99;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+    .modal.show {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      max-width: 400px;
+      width: 90%;
+      text-align: left;
+      transform: translateY(30px);
+      transition: transform 0.4s ease;
+    }
+    .modal.show .modal-content {
+      transform: translateY(0);
+    }
+
+    .modal-content h3 {
+      text-align: center;
+      margin-bottom: 15px;
+      color: rgb(0,61,121);
+    }
+
+    .close-btn {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #003B70; /* biru mandiri */
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .close-btn:hover {
+      background: #002D5A;
+    }
+
+    .contact {
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background-color: rgb(37, 211, 102);
+      color: white;
+      padding: 14px;
+      border-radius: 12px;
+      font-weight: bold;
+      font-size: 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .contact:hover {
+      transform: scale(1.03);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .contact img { width: 26px; height: 26px; }
+
+    @media (max-width: 600px) {
+      .top-left-logo img { max-width: 80px; }
+      .top-right-logo img { max-width: 120px; }
+      h2 { font-size: 20px; }
+      .calculator { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Logo -->
+  <div class="top-left-logo">
+    <img src="https://i.imgur.com/faj2TfR.png" alt="Logo Danantara">
+  </div>
+  <div class="top-right-logo">
+    <img src="https://i.imgur.com/ozyFfMs.png" alt="Logo Mandiri">
+  </div>
+
+  <div class="calculator" id="calculatorForm">
+    <h2>Kalkulator KSM</h2>
+
+    <label for="company">Perusahaan</label>
+    <select id="company">
+      <option value="">Pilih perusahaan</option>
+      <option value="8.127">Rumah Sakit Umum Pusat Fatmawati</option>
+      <option value="8.127">Bank Mandiri Jakarta</option>
+      <option value="8.127">Aneka Tambang Jakarta Selatan</option>
+      <option value="17">Tri Adi Bersama</option>
+    </select>
+
+    <label for="loanAmount">Jumlah Pinjaman</label>
+    <select id="loanAmount"></select>
+
+    <label for="loanTerm">Tenor (tahun)</label>
+    <select id="loanTerm">
+      <option value="">Pilih tenor</option>
+    </select>
+
+    <button onclick="calculateKSM()">Hitung</button>
+
+    <a href="https://wa.me/6285896925581" target="_blank" class="contact">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp Logo">
+      Calvin Cahyo Wibowo - 085896925581
+    </a>
+  </div>
+
+  <!-- Modal hasil -->
+  <div id="resultModal" class="modal">
+    <div class="modal-content">
+      <h3>Hasil Perhitungan</h3>
+      <p id="interestRate"></p>
+      <p id="monthlyInstallment"></p>
+      <p id="provision"></p>
+      <p id="admin"></p>
+      <p id="block"></p>
+      <p id="netDisbursement"></p>
+      <button class="close-btn" onclick="closeModal()">Tutup</button>
+    </div>
+  </div>
+
+  <script>
+    // isi dropdown otomatis
+    window.addEventListener('DOMContentLoaded', () => {
+      const loanTermSelect = document.getElementById('loanTerm');
+      for (let i = 1; i <= 15; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.text = i + ' Tahun';
+        loanTermSelect.appendChild(option);
+      }
+
+      const loanAmountSelect = document.getElementById('loanAmount');
+      for (let i = 50000000; i <= 750000000; i += 25000000) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.text = 'Rp ' + i.toLocaleString('id-ID');
+        loanAmountSelect.appendChild(option);
+      }
+    });
+
+    function calculateKSM() {
+      const principal = parseFloat(document.getElementById('loanAmount').value);
+      const years = parseFloat(document.getElementById('loanTerm').value);
+      const interestRate = parseFloat(document.getElementById('company').value);
+
+      if (isNaN(principal)) {
+        alert('Silakan pilih jumlah pinjaman');
+        return;
+      }
+      if (isNaN(years) || years < 1 || years > 15) {
+        alert('Silakan pilih tenor yang valid');
+        return;
+      }
+      if (isNaN(interestRate)) {
+        alert('Silakan pilih perusahaan terlebih dahulu');
+        return;
+      }
+
+      const totalInterest = principal * (interestRate / 100) * years;
+      const totalPayment = principal + totalInterest;
+      const monthlyInstallment = Math.round(totalPayment / (years * 12));
+
+      const provision = Math.round(principal * 0.01); 
+      const admin = 27000;
+      const block = monthlyInstallment;
+      const netDisbursement = principal - provision - admin - block;
+
+      document.getElementById('interestRate').textContent = `Bunga: ${interestRate}%`;
+      document.getElementById('monthlyInstallment').textContent = `Cicilan per Bulan: Rp ${monthlyInstallment.toLocaleString('id-ID')}`;
+      document.getElementById('provision').textContent = `Provisi (1%): Rp ${provision.toLocaleString('id-ID')}`;
+      document.getElementById('admin').textContent = `Admin: Rp ${admin.toLocaleString('id-ID')}`;
+      document.getElementById('block').textContent = `Blokir 1x Angsuran: Rp ${block.toLocaleString('id-ID')}`;
+      document.getElementById('netDisbursement').textContent = `Terima Bersih: Rp ${netDisbursement.toLocaleString('id-ID')}`;
+
+      const modal = document.getElementById('resultModal');
+      modal.classList.add('show');
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('resultModal');
+      modal.classList.remove('show');
+    }
+  </script>
+</body>
+</html>

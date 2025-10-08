@@ -2,72 +2,94 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Kalkulator KSM (Efektif)</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
-    /* 🌊 Background animasi lembut khas Mandiri */
+    /* 🌊 Background animasi halus khas Mandiri */
     body {
       font-family: 'Arial', sans-serif;
       background: linear-gradient(135deg, #f0f0f0 0%, #ffffff 100%);
       color: #003B70;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 10px;
+      display: flex; justify-content: center; align-items: center;
+      min-height: 100vh; padding: 10px;
       position: relative;
       overflow: hidden;
       animation: fadeIn 0.8s ease-in-out;
     }
-    body::before, body::after {
+    body::before {
       content: "";
       position: absolute;
-      border-radius: 50%;
-      pointer-events: none;
-    }
-    body::before {
       top: -100px; left: -100px;
       width: 400px; height: 400px;
-      background: radial-gradient(circle at 30% 30%, rgba(255,183,0,0.25), transparent 70%);
+      background: radial-gradient(circle at 30% 30%, rgba(255,183,0,0.3), transparent 70%);
       animation: float 8s ease-in-out infinite alternate;
+      z-index: 0;
     }
     body::after {
+      content: "";
+      position: absolute;
       bottom: -120px; right: -100px;
       width: 400px; height: 400px;
-      background: radial-gradient(circle at 70% 70%, rgba(0,59,112,0.2), transparent 70%);
+      background: radial-gradient(circle at 70% 70%, rgba(0,59,112,0.25), transparent 70%);
       animation: float2 10s ease-in-out infinite alternate;
+      z-index: 0;
     }
-    @keyframes float { from { transform: translateY(0); } to { transform: translateY(20px); } }
-    @keyframes float2 { from { transform: translateY(0); } to { transform: translateY(-25px); } }
+
+    @keyframes float {
+      from { transform: translateY(0); opacity: 0.9; }
+      to { transform: translateY(20px); opacity: 1; }
+    }
+    @keyframes float2 {
+      from { transform: translateY(0); opacity: 0.8; }
+      to { transform: translateY(-25px); opacity: 1; }
+    }
     @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
 
-    /* Header Logo */
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 18px;
+    /* Logo */
+    .top-left-logo, .top-right-logo {
+      position: absolute;
+      top: 24px;
+      z-index: 10;
+      animation: slideDown 0.9s ease-in-out;
     }
-    .header img {
-      max-height: 48px;
-      object-fit: contain;
-      width: auto;
+    .top-left-logo { left: 24px; }
+    .top-right-logo { right: 24px; }
+
+    .top-left-logo img, .top-right-logo img {
+      max-width: clamp(90px, 22vw, 150px);
+      height: auto;
+      image-rendering: -webkit-optimize-contrast;
+      animation: logoFade 0.8s ease-in-out;
     }
 
-    /* Box kalkulator */
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes logoFade {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Kalkulator box */
     .calculator {
       background: #fff;
-      padding: 26px;
+      padding: 30px;
       border-radius: 16px;
       box-shadow: 0 6px 18px rgba(0,0,0,0.15);
       width: 100%;
       max-width: 440px;
       text-align: center;
-      z-index: 10;
+      position: relative;
+      z-index: 2;
       animation: popUp 0.8s ease-out;
     }
-    @keyframes popUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    @keyframes popUp {
+      from { transform: translateY(40px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
 
     h2 {
       margin-bottom: 18px;
@@ -92,7 +114,6 @@
       border-radius: 8px;
       transition: all 0.3s ease;
       box-sizing: border-box;
-      background: white;
     }
     select:hover, input:hover {
       border-color: #FFB700;
@@ -109,13 +130,8 @@
       border: none;
       cursor: pointer;
       transition: all .25s ease;
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      text-decoration: none;
-      box-sizing: border-box;
-      position: relative;
-      z-index: 10;
+      display: inline-flex; justify-content: center; align-items: center;
+      text-decoration: none; box-sizing: border-box;
     }
     button {
       margin-top: 18px;
@@ -128,18 +144,15 @@
       transform: translateY(-2px);
       box-shadow: 0 8px 18px rgba(255,183,0,0.35);
     }
-
     .download-btn { background: #FFB700; color: #003B70; }
     .download-btn:hover { background: #FFD34E; transform: translateY(-2px); }
     .close-btn { background: #003B70; color: #fff; }
     .close-btn:hover { background: #002D5A; transform: translateY(-2px); }
 
+    /* WhatsApp button */
     .contact {
-      margin-top: 18px;
-      background: #25D366;
-      color: #fff;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.18);
-      gap: 8px;
+      margin-top: 18px; background: #25D366; color: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.18); gap: 8px;
     }
     .contact:hover {
       background: #20bb5a;
@@ -150,62 +163,57 @@
 
     /* Modal */
     .modal {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: rgba(0,0,0,.6);
-      opacity: 0;
-      visibility: hidden;
-      transition: .35s;
-      z-index: 1000;
+      position: fixed; inset: 0; display: flex; justify-content: center; align-items: center;
+      background: rgba(0,0,0,.6); opacity: 0; visibility: hidden; transition: .35s; z-index: 99;
     }
     .modal.show { opacity: 1; visibility: visible; }
     .modal-content {
-      background: white;
-      border-radius: 14px;
-      padding: 22px;
-      width: 92%;
-      max-width: 420px;
-      transform: translateY(25px);
-      transition: .35s;
+      background: white; border-radius: 14px; padding: 22px; width: 92%; max-width: 420px;
+      transform: translateY(22px); transition: .35s;
     }
     .modal.show .modal-content { transform: translateY(0); }
     .modal-content h3 { text-align: center; color: #003B70; }
     .btn-row { display: grid; gap: 10px; margin-top: 14px; }
 
     #resultBreakdown {
-      text-align: left;
-      background: #f9f9f9;
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 14px;
-      margin-top: 10px;
+      text-align: left; background: #f9f9f9; padding: 12px;
+      border-radius: 8px; font-size: 14px; margin-top: 10px;
     }
     #resultBreakdown p { margin: 4px 0; }
     #resultBreakdown .total {
-      border-top: 1px solid #ccc;
-      margin-top: 6px;
-      padding-top: 6px;
-      font-weight: bold;
-      color: #003B70;
+      border-top: 1px solid #ccc; margin-top: 6px; padding-top: 6px;
+      font-weight: bold; color: #003B70;
     }
 
     @media (max-width: 600px) {
-      .header img { max-height: 40px; }
+      .top-left-logo img, .top-right-logo img { max-width: 100px; }
       h2 { font-size: 20px; }
-      .calculator { padding: 20px; }
+      .calculator { padding: 22px; }
     }
   </style>
 </head>
 <body>
-  <div class="calculator">
-    <div class="header">
-      <img src="https://i.imgur.com/faj2TfR.png" alt="Logo Danantara" />
-      <img src="https://i.imgur.com/ozyFfMs.png" alt="Logo Mandiri" />
-    </div>
+  <!-- ✅ Logo Lokal -->
+  <div class="top-left-logo">
+    <img 
+      src="./danantara.png" 
+      alt="Logo Danantara"
+      loading="lazy"
+      onerror="this.onerror=null; this.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAB...';"
+    />
+  </div>
 
+  <div class="top-right-logo">
+    <img 
+      src="./mandiri.png" 
+      alt="Logo Mandiri"
+      loading="lazy"
+      onerror="this.onerror=null; this.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAB...';"
+    />
+  </div>
+
+  <!-- Kalkulator -->
+  <div class="calculator">
     <h2>Kalkulator KSM</h2>
 
     <label for="type">Jenis Pengajuan</label>
@@ -223,7 +231,7 @@
     <label for="company">Perusahaan</label>
     <select id="company">
       <option value="">Pilih perusahaan</option>
-      <option value="8.127">RSUP Fatmawati</option>
+      <option value="8.127">Rumah Sakit Umum Pusat Fatmawati</option>
       <option value="8.127">Bank Mandiri Jakarta</option>
       <option value="8.127">Aneka Tambang Jakarta Selatan</option>
       <option value="17">Tri Adi Bersama</option>
@@ -244,12 +252,13 @@
     </a>
   </div>
 
+  <!-- Modal Hasil -->
   <div id="resultModal" class="modal">
     <div class="modal-content">
       <h3>Hasil Perhitungan</h3>
       <div id="resultBreakdown"></div>
       <div class="btn-row">
-        <button class="download-btn" onclick="downloadPDF()">Lihat/Unduh PDF</button>
+        <button class="download-btn" onclick="downloadPDF()">Unduh PDF</button>
         <button class="close-btn" onclick="closeModal()">Tutup</button>
       </div>
     </div>
@@ -257,16 +266,17 @@
 
   <script>
     const idr = n => 'Rp ' + (n||0).toLocaleString('id-ID');
+
     window.addEventListener('DOMContentLoaded', () => {
-      const loanTerm = document.getElementById('loanTerm');
-      for (let i = 1; i <= 15; i++) loanTerm.innerHTML += `<option value="${i}">${i} Tahun</option>`;
-      const loanAmount = document.getElementById('loanAmount');
+      const loanTermSelect = document.getElementById('loanTerm');
+      for (let i = 1; i <= 15; i++) loanTermSelect.innerHTML += `<option value="${i}">${i} Tahun</option>`;
+      const loanAmountSelect = document.getElementById('loanAmount');
       for (let i = 50_000_000; i <= 750_000_000; i += 25_000_000)
-        loanAmount.innerHTML += `<option value="${i}">${idr(i)}</option>`;
+        loanAmountSelect.innerHTML += `<option value="${i}">${idr(i)}</option>`;
     });
 
     function toggleTopUp() {
-      document.getElementById('topupFields').style.display = 
+      document.getElementById('topupFields').style.display =
         document.getElementById('type').value === 'topup' ? 'block' : 'none';
     }
 
@@ -276,47 +286,61 @@
       const type = document.getElementById('type').value;
       const principal = parseFloat(document.getElementById('loanAmount').value);
       const years = parseFloat(document.getElementById('loanTerm').value);
-      const rateBase = parseFloat(document.getElementById('company').value);
+      const interestRateBase = parseFloat(document.getElementById('company').value);
       const existingLoan = parseFloat(document.getElementById('existingLoan').value) || 0;
+
       if (!type) return alert('Pilih jenis pengajuan terlebih dahulu');
       if (isNaN(principal)) return alert('Silakan pilih jumlah pinjaman');
-      if (isNaN(years)) return alert('Silakan pilih tenor yang valid');
-      if (isNaN(rateBase)) return alert('Silakan pilih perusahaan terlebih dahulu');
+      if (isNaN(years) || years < 1 || years > 15) return alert('Silakan pilih tenor yang valid');
+      if (isNaN(interestRateBase)) return alert('Silakan pilih perusahaan terlebih dahulu');
 
-      let rate = rateBase / 100 / 12;
-      let months = years * 12;
-      let monthly = Math.round(principal * rate / (1 - Math.pow(1 + rate, -months)));
+      let finalInterest = interestRateBase;
+      let usedLoan = principal;
+      if (type === 'new') {
+        if (principal < 200_000_000) finalInterest = 9.25;
+      } else {
+        usedLoan = principal - existingLoan;
+        if (usedLoan < 200_000_000) {
+          return alert('Penambahan baki debet (Top Up - Sisa KSM) harus minimal 200 juta');
+        }
+      }
+
+      const rate = finalInterest / 100 / 12;
+      const months = years * 12;
+      const monthlyInstallment = Math.round(principal * rate / (1 - Math.pow(1 + rate, -months)));
 
       const provision = Math.round(principal * 0.01);
       const admin = 27_000;
-      const block = monthly;
-      const usedLoan = type === 'topup' ? (principal - existingLoan) : principal;
-      if (type === 'topup' && usedLoan < 200_000_000) return alert('Penambahan baki debet minimal 200 juta');
-      const net = usedLoan - provision - admin - block;
+      const block = monthlyInstallment;
+      const baseForCash = (type === 'topup') ? (principal - existingLoan) : principal;
+      const netDisbursement = baseForCash - provision - admin - block;
 
-      calcResult = { type, years, principal, rateBase, existingLoan, usedLoan, monthly, provision, admin, block, net };
+      calcResult = { type, years, principal, finalInterest, existingLoan, usedLoan, monthlyInstallment, provision, admin, block, netDisbursement };
 
-      const res = `
+      const breakdownHTML = `
         <p><b>Jenis Pengajuan:</b> ${type === 'topup' ? 'Top Up' : 'New'}</p>
-        <p><b>Suku Bunga Efektif:</b> ${rateBase}% p.a.</p>
+        <p><b>Suku Bunga Efektif:</b> ${finalInterest}% p.a.</p>
         ${type === 'topup' ? `
-          <p><b>Sisa KSM:</b> ${idr(existingLoan)}</p>
-          <p><b>Pinjaman Baru:</b> ${idr(principal)}</p>
+          <p><b>Sisa KSM Berjalan:</b> ${idr(existingLoan)}</p>
+          <p><b>Pengajuan Baru:</b> ${idr(principal)}</p>
           <hr/>
-          <p><b>Perhitungan:</b></p>
+          <p><b>Penghitungan:</b></p>
           <p>Pinjaman Baru: ${idr(principal)}</p>
-          <p>- Pelunasan: ${idr(existingLoan)}</p>
+          <p>- Pelunasan KSM Berjalan: ${idr(existingLoan)}</p>
           <p>= Penambahan Baki Debet: <b>${idr(usedLoan)}</b></p>
         ` : `
-          <hr/><p><b>Jumlah Pinjaman:</b> ${idr(principal)}</p>
+          <hr/>
+          <p><b>Penghitungan:</b></p>
+          <p>Jumlah Pinjaman: <b>${idr(principal)}</b></p>
         `}
-        <p>- Provisi (1%): ${idr(provision)}</p>
+        <p>- Provisi (1% dari pinjaman baru): ${idr(provision)}</p>
         <p>- Admin: ${idr(admin)}</p>
         <p>- Blokir 1x Angsuran: ${idr(block)}</p>
-        <p class="total">= Terima Bersih: ${idr(net)}</p>
+        <p class="total">= Terima Bersih: ${idr(netDisbursement)}</p>
         <hr/>
-        <p><b>Cicilan per Bulan:</b> ${idr(monthly)} × ${months} bulan</p>`;
-      document.getElementById('resultBreakdown').innerHTML = res;
+        <p><b>Cicilan per Bulan (Efektif):</b> ${idr(monthlyInstallment)} × ${months} bulan</p>
+      `;
+      document.getElementById('resultBreakdown').innerHTML = breakdownHTML;
       document.getElementById('resultModal').classList.add('show');
     }
 
@@ -324,75 +348,86 @@
       document.getElementById('resultModal').classList.remove('show');
     }
 
-    function downloadPDF() {
+    async function downloadPDF() {
       const { jsPDF } = window.jspdf;
-      if (!calcResult.type) return alert('Hitung dulu sebelum unduh PDF.');
-
       const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-      const BLUE = '#003B70', YELLOW = '#FFB700', W = doc.internal.pageSize.getWidth();
+      const BLUE = '#003B70', YELLOW = '#FFB700', pageW = doc.internal.pageSize.getWidth();
 
       doc.setFillColor(BLUE);
-      doc.rect(0, 0, W, 25, 'F');
+      doc.rect(0, 0, pageW, 25, 'F');
       doc.setFontSize(12);
-      doc.setTextColor('#FFF');
-      doc.text('Simulasi Kredit Serbaguna Mandiri (KSM)', W / 2, 15, { align: 'center' });
+      doc.setTextColor('#FFFFFF');
+      doc.text('Hasil Simulasi Kredit Serbaguna Mandiri (KSM)', pageW / 2, 16, { align: 'center' });
 
-      let y = 35, L = 15, R = W - 15;
+      let y = 36, left = 15, right = pageW - 15;
+      doc.setTextColor('#000000');
       doc.setFontSize(10);
-      doc.setTextColor('#000');
       const tgl = new Date().toLocaleDateString('id-ID');
-      doc.text(`Tanggal: ${tgl}`, L, y);
-      doc.text('Cabang: Margasatwa', R, y, { align: 'right' });
+      doc.text(`Tanggal: ${tgl}`, left, y);
+      doc.text('Cabang: Margasatwa', right, y, { align: 'right' });
       y += 8;
 
-      const draw = (l, v) => { doc.text(l, L, y); doc.text(v, R, y, { align: 'right' }); y += 7; };
+      const drawRow = (label, value) => {
+        doc.text(label, left, y);
+        doc.text(value, right, y, { align: 'right' });
+        y += 7;
+      };
 
       doc.setFillColor(YELLOW);
       doc.setTextColor(BLUE);
-      doc.rect(L, y - 4, R - L, 8, 'F');
-      doc.text('Rincian Pengajuan', L + 2, y + 2);
+      doc.rect(left, y - 4, right - left, 8, 'F');
+      doc.text('Rincian Pengajuan', left + 2, y + 2);
       y += 10;
 
       doc.setTextColor('#000');
-      draw('Jenis Pengajuan', calcResult.type === 'topup' ? 'Top Up' : 'New');
-      draw('Tenor', `${calcResult.years} tahun`);
-      draw('Suku Bunga Efektif (p.a.)', `${calcResult.rateBase}%`);
+      drawRow('Jenis Pengajuan', calcResult.type === 'topup' ? 'Top Up' : 'New');
+      drawRow('Tenor', `${calcResult.years} tahun`);
+      drawRow('Suku Bunga Efektif (p.a.)', `${calcResult.finalInterest}%`);
       if (calcResult.type === 'topup') {
-        draw('Sisa KSM', idr(calcResult.existingLoan));
-        draw('Pinjaman Baru', idr(calcResult.principal));
-        draw('Penambahan Baki Debet', idr(calcResult.usedLoan));
+        drawRow('Sisa KSM Berjalan', idr(calcResult.existingLoan));
+        drawRow('Pengajuan Baru', idr(calcResult.principal));
+        drawRow('Penambahan Baki Debet', idr(calcResult.usedLoan));
       } else {
-        draw('Jumlah Pinjaman', idr(calcResult.principal));
+        drawRow('Jumlah Pinjaman', idr(calcResult.principal));
       }
 
       y += 6;
+
       doc.setFillColor(YELLOW);
       doc.setTextColor(BLUE);
-      doc.rect(L, y - 4, R - L, 8, 'F');
-      doc.text('Perhitungan', L + 2, y + 2);
+      doc.rect(left, y - 4, right - left, 8, 'F');
+      doc.text('Rincian Perhitungan', left + 2, y + 2);
       y += 10;
+
       doc.setTextColor('#000');
-      draw('- Provisi (1%)', idr(calcResult.provision));
-      draw('- Admin', idr(calcResult.admin));
-      draw('- Blokir 1x Angsuran', idr(calcResult.block));
+      if (calcResult.type === 'topup') {
+        drawRow('Pinjaman Baru', idr(calcResult.principal));
+        drawRow('- Pelunasan KSM Berjalan', idr(calcResult.existingLoan));
+        drawRow('= Penambahan Baki Debet', idr(calcResult.usedLoan));
+      } else {
+        drawRow('Jumlah Pinjaman', idr(calcResult.principal));
+      }
+
+      drawRow('- Provisi (1% dari pinjaman baru)', idr(calcResult.provision));
+      drawRow('- Admin', idr(calcResult.admin));
+      drawRow('- Blokir 1x Angsuran', idr(calcResult.block));
+
       y += 3;
-      doc.line(L, y, R, y); y += 6;
-      draw('= Terima Bersih', idr(calcResult.net));
+      doc.setDrawColor(160); doc.setLineWidth(0.3);
+      doc.line(left, y, right, y); y += 6;
+      drawRow('= Terima Bersih', idr(calcResult.netDisbursement));
+
       y += 4;
-      draw('Cicilan/Bulan', `${idr(calcResult.monthly)} × ${calcResult.years * 12} bln`);
+      drawRow('Cicilan per Bulan (Efektif)', `${idr(calcResult.monthlyInstallment)} × ${calcResult.years * 12} bulan`);
 
       y += 10;
-      doc.setFontSize(9);
-      doc.setTextColor('#444');
-      doc.text('Simulasi ini bersifat indikatif (bunga efektif).', L, y);
+      doc.setFontSize(9); doc.setTextColor('#444');
+      doc.text('Catatan: Simulasi ini bersifat indikatif dan menggunakan perhitungan bunga efektif.', left, y);
       y += 5;
-      doc.text('PT Bank Mandiri (Persero) Tbk – Cabang Margasatwa', L, y);
-      doc.text('Calvin Cahyo Wibowo', R, y, { align: 'right' });
+      doc.text('PT Bank Mandiri (Persero) Tbk – Cabang Margasatwa', left, y);
+      doc.text('Calvin Cahyo Wibowo', right, y, { align: 'right' });
 
-      // ✅ preview PDF di tab baru
-      const blob = doc.output('blob');
-      const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
+      doc.save(`Simulasi_KSM_Mandiri_${tgl}.pdf`);
     }
   </script>
 </body>
